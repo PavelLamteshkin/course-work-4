@@ -13,7 +13,6 @@ class BaseClass(ABC):
 
 class HeadHunterAPI(BaseClass):
     def get_requests(self, keyword, page):
-        # headers = {'User-Agent': 'MyApp/1.0(myapp@example.com)'} не понадобилось
         params = {'text': keyword, 'page': page, 'per_page': 100}
         response = requests.get('https://api.hh.ru/vacancies/', params=params).json()['items']
 
@@ -23,9 +22,13 @@ class HeadHunterAPI(BaseClass):
         pages = 1
         response = []
         for page in range(pages):
-            print(f'Парсинг страницы HeadHunter {page + 1}', end=': ')
+            print(f'Парсинг страницы HeadHunter {page + 1}', end=': '
+                  'Вывод отсортирован по возрастанию минимаотной границы зарплаты.')
             values = self.get_requests(keyword, page)
-            print(f'Найдено {len(values)} вакансий') #Есть прогресс
+            if len(values) > 0:
+                print(f'Найдено {len(values)} вакансий')
+            else:
+                print('Нет вакансий, удовлетворяющих заданному ключевому слову')
             response.extend(values)
 
         return response
@@ -36,7 +39,6 @@ class SuperJobAPI(BaseClass):
     def get_requests(self, keyword):
         my_auth_data = {'X-Api-App-Id': 'v3.r.137554298.7ed34200bc8788e0642503c21968de5327309a34.069ebc348f3a077c9626c0106aa6f72964488b38'}
         header = my_auth_data
-        # header = {'X-Api-App-Id': os.getenv('SJ_API_KEY')}
         params = {'keyword': keyword, 'page': 0, 'count': 100}
 
         response = requests.get('https://api.superjob.ru/2.0/vacancies/', params=params, headers=header)
@@ -48,7 +50,8 @@ class SuperJobAPI(BaseClass):
         pages = 1
         response = []
         for page in range(pages):
-            print(f'Парсинг страницы SuperJob {page + 1}', end=': ')
+            print(f'Парсинг страницы SuperJob {page + 1}', end=': '
+                  'Вывод отсортирован по возрастанию минимаотной границы зарплаты.')
             values = self.get_requests(keyword)
             print(f'Найдено {len(values)} вакансий') #Есть прогресс
             response.extend(values)
@@ -117,7 +120,7 @@ class JSONSaver:
                 salary_min = row['salary']['from']
                 salary_max = row['salary']['to']
                 currency = row['salary']['currency']
-            vacancies.append(Vacancy(row['name'], salary_min, salary_max, currency, row['employer']['name'], row['area']['name'], row['employer']['alternate_url']))
+            vacancies.append(Vacancy(row['name'], salary_min, salary_max, currency, row['employer']['name'], row['area']['name'], row['alternate_url']))
 
         return vacancies
 
@@ -127,12 +130,9 @@ class JSONSaver:
 
         vacancies = []
         for row in data:
-            salary_min, salary_max, currency, area = None, None, None, None
             salary_min = row['payment_from']
             salary_max = row['payment_to']
             currency = row['currency']
             vacancies.append(Vacancy(row['profession'], salary_min, salary_max, currency, row['firm_name'], row['town']['title'], row['link']))
 
         return vacancies
-
-# row['client']['title'], row['client']['town']['title'], row['client']['link']
