@@ -8,27 +8,42 @@ def main():
     keyword = 'Python'
 
     # Создание экземпляра класса для работы с API сайтов с вакансиями
-    hh_api = HeadHunterAPI()
-    # superjob_api = SuperJobAPI()
+    # hh_api = HeadHunterAPI()
+    superjob_api = SuperJobAPI()
 
-    # Получение вакансий с разных платформ
-    hh_vacancies = hh_api.get_vacancies(keyword)
+    # Получение вакансий с HeadHunter
+    # hh_vacancies = hh_api.get_vacancies(keyword)
 
-    # Сохранение информации о вакансиях в файл
+    # Сохранение информации о вакансиях HeadHunter в файл
+    # json_saver = JSONSaver(keyword)
+    # json_saver.add_vacancies(hh_vacancies)
+
+    # data = json_saver.select_HH()
+    # data = sort_by_salary_min(data)
+
+    # for row in data:
+    #     print(row, end=f'\n{"*"*30}\n')
+
+
+    # Получение вакансий с SuperJob
+    superjob_vacancies = superjob_api.get_vacancies(keyword)
+
+    # Сохранение информации о вакансиях SuperJob в файл
     json_saver = JSONSaver(keyword)
-    json_saver.add_vacancies(hh_vacancies)
+    json_saver.add_vacancies(superjob_vacancies)
 
-    data = json_saver.select()
-    data = sort_by_salary_min(data)
-    # data = sort_by_salary_max(data)
+    data = json_saver.select_SJ()
+    # data = sort_by_salary_min(data)
 
     for row in data:
         print(row, end=f'\n{"*"*30}\n')
 
-    # json_saver.get_vacancies_by_salary("100 000-150 000 руб.")
-    # json_saver.delete_vacancy(vacancy)
 
-    # superjob_vacancies = superjob_api.get_vacancies("Python")
+
+
+
+
+
 
     # Создание экземпляра класса для работы с вакансиями
     # vacancy = Vacancy("Python Developer", "<https://hh.ru/vacancy/123456>", "100 000-150 000 руб.", "Требования: опыт работы от 3 лет...")

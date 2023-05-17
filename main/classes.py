@@ -13,7 +13,7 @@ class BaseClass(ABC):
 
 class HeadHunterAPI(BaseClass):
     def get_requests(self, keyword, page):
-        # headers = {'User-Agent': 'MyApp/1.0(myapp@example.com)'}
+        # headers = {'User-Agent': 'MyApp/1.0(myapp@example.com)'} не понадобилось
         params = {'text': keyword, 'page': page, 'per_page': 100}
         response = requests.get('https://api.hh.ru/vacancies/', params=params).json()['items']
 
@@ -23,7 +23,7 @@ class HeadHunterAPI(BaseClass):
         pages = 1
         response = []
         for page in range(pages):
-            print(f'Парсинг страницы {page + 1}', end=': ')
+            print(f'Парсинг страницы HeadHunter {page + 1}', end=': ')
             values = self.get_requests(keyword, page)
             print(f'Найдено {len(values)} вакансий') #Есть прогресс
             response.extend(values)
@@ -33,7 +33,7 @@ class HeadHunterAPI(BaseClass):
 
 class SuperJobAPI(BaseClass):
 
-    def get_requests(self):
+    def get_requests(self, keyword):
         my_auth_data = {'X-Api-App-Id': 'v3.r.137554298.7ed34200bc8788e0642503c21968de5327309a34.069ebc348f3a077c9626c0106aa6f72964488b38'}
         header = my_auth_data
         # header = {'X-Api-App-Id': os.getenv('SJ_API_KEY')}
@@ -43,6 +43,17 @@ class SuperJobAPI(BaseClass):
         if response.status_code != 200:
             raise 'Ошибка пaрсинга'
         return response.json()['objects']
+
+    def get_vacancies(self, keyword, count=499):
+        pages = 1
+        response = []
+        for page in range(pages):
+            print(f'Парсинг страницы SuperJob {page + 1}', end=': ')
+            values = self.get_requests(keyword)
+            print(f'Найдено {len(values)} вакансий') #Есть прогресс
+            response.extend(values)
+
+        return response
 
 
 class Vacancy:
@@ -95,7 +106,7 @@ class JSONSaver:
             json.dump(data, file, indent=4, ensure_ascii=False)
 
 
-    def select(self):
+    def select_HH(self):
         with open(self.__filename, 'r', encoding='utf-8') as file:
             data = json.load(file)
 
@@ -110,6 +121,18 @@ class JSONSaver:
 
         return vacancies
 
-superjob_api = SuperJobAPI()
-keyword = 'python'
-print(SuperJobAPI.get_requests(keyword))
+    def select_SJ(self):
+        with open(self.__filename, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+
+        vacancies = []
+        for row in data:
+            salary_min, salary_max, currency, area = None, None, None, None
+            salary_min = row['payment_from']
+            salary_max = row['payment_to']
+            currency = row['currency']
+            vacancies.append(Vacancy(row['profession'], salary_min, salary_max, currency, row['firm_name'], row['town']['title'], row['link']))
+
+        return vacancies
+
+# row['client']['title'], row['client']['town']['title'], row['client']['link']
