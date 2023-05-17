@@ -8,7 +8,7 @@ def main():
     platforms = input(f'HeadHunter или SuperJob? ')
 
     if platforms == 'HeadHunter':
-        hh_api = HeadHunterAPI() #Создание экземпляра класса для работы с API HeadHunter
+        hh_api = HeadHunterAPI() # Создание экземпляра класса для работы с API HeadHunter
         hh_vacancies = hh_api.get_vacancies(keyword) # Получение вакансий с HeadHunter
 
         # Сохранение информации о вакансиях HeadHunter в файл
@@ -21,7 +21,7 @@ def main():
         for row in data:
             print(row, end=f'\n{"*"*30}\n')
     elif platforms == 'SuperJob':
-        superjob_api = SuperJobAPI() #Создание экземпляра класса для работы с API SuperJob
+        superjob_api = SuperJobAPI() # Создание экземпляра класса для работы с API SuperJob
         superjob_vacancies = superjob_api.get_vacancies(keyword) # Получение вакансий с SuperJob
 
         # Сохранение информации о вакансиях SuperJob в файл
@@ -34,7 +34,7 @@ def main():
         for row in data:
             print(row, end=f'\n{"*" * 30}\n')
     else:
-        print('Ошибка в имени платформы')
+        print('Ошибка в имени платформы.')
 
 
 if __name__ == "__main__":

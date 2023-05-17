@@ -23,12 +23,12 @@ class HeadHunterAPI(BaseClass):
         response = []
         for page in range(pages):
             print(f'Парсинг страницы HeadHunter {page + 1}', end=': '
-                  'Вывод отсортирован по возрастанию минимаотной границы зарплаты.')
+                  'Вывод отсортирован по возрастанию минимаотной границы зарплаты.\n')
             values = self.get_requests(keyword, page)
             if len(values) > 0:
                 print(f'Найдено {len(values)} вакансий')
             else:
-                print('Нет вакансий, удовлетворяющих заданному ключевому слову')
+                print('Нет вакансий, удовлетворяющих заданному ключевому слову.')
             response.extend(values)
 
         return response
@@ -51,9 +51,12 @@ class SuperJobAPI(BaseClass):
         response = []
         for page in range(pages):
             print(f'Парсинг страницы SuperJob {page + 1}', end=': '
-                  'Вывод отсортирован по возрастанию минимаотной границы зарплаты.')
+                  'Вывод отсортирован по возрастанию минимаотной границы зарплаты.\n')
             values = self.get_requests(keyword)
-            print(f'Найдено {len(values)} вакансий') #Есть прогресс
+            if len(values) > 0:
+                print(f'Найдено {len(values)} вакансий')
+            else:
+                print('Нет вакансий, удовлетворяющих заданному ключевому слову.')
             response.extend(values)
 
         return response
