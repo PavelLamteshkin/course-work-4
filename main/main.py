@@ -1,4 +1,4 @@
-from classes import HeadHunterAPI, JSONSaver
+from classes import HeadHunterAPI, SuperJobAPI, JSONSaver
 from utils import sort_by_salary_min
 
 

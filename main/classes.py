@@ -1,4 +1,5 @@
 import json
+import os
 from abc import ABC, abstractmethod
 import requests
 from pprint import pprint
@@ -14,7 +15,7 @@ class HeadHunterAPI(BaseClass):
     def get_requests(self, keyword, page):
         # headers = {'User-Agent': 'MyApp/1.0(myapp@example.com)'}
         params = {'text': keyword, 'page': page, 'per_page': 100}
-        response = requests.get('https://api.hh.ru/vacancies/', params = params).json()['items']
+        response = requests.get('https://api.hh.ru/vacancies/', params=params).json()['items']
 
         return response
 
@@ -28,6 +29,20 @@ class HeadHunterAPI(BaseClass):
             response.extend(values)
 
         return response
+
+
+class SuperJobAPI(BaseClass):
+
+    def get_requests(self):
+        my_auth_data = {'X-Api-App-Id': 'v3.r.137554298.7ed34200bc8788e0642503c21968de5327309a34.069ebc348f3a077c9626c0106aa6f72964488b38'}
+        header = my_auth_data
+        # header = {'X-Api-App-Id': os.getenv('SJ_API_KEY')}
+        params = {'keyword': keyword, 'page': 0, 'count': 100}
+
+        response = requests.get('https://api.superjob.ru/2.0/vacancies/', params=params, headers=header)
+        if response.status_code != 200:
+            raise 'Ошибка пaрсинга'
+        return response.json()['objects']
 
 
 class Vacancy:
@@ -94,3 +109,7 @@ class JSONSaver:
             vacancies.append(Vacancy(row['name'], salary_min, salary_max, currency, row['employer']['name'], row['area']['name'], row['employer']['alternate_url']))
 
         return vacancies
+
+superjob_api = SuperJobAPI()
+keyword = 'python'
+print(SuperJobAPI.get_requests(keyword))
