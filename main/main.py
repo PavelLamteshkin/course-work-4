@@ -6,10 +6,11 @@ def main():
 
     keyword = input('По какому ключевому слову ищем вакансию: ')
     platforms = input(f'HeadHunter или SuperJob? ')
+    count = int(input('Сколько вакансий смотрим? '))
 
     if platforms == 'HeadHunter':
         hh_api = HeadHunterAPI() # Создание экземпляра класса для работы с API HeadHunter
-        hh_vacancies = hh_api.get_vacancies(keyword) # Получение вакансий с HeadHunter
+        hh_vacancies = hh_api.get_vacancies(keyword, count) # Получение вакансий с HeadHunter
 
         # Сохранение информации о вакансиях HeadHunter в файл
         json_saver = JSONSaver(keyword)
@@ -18,11 +19,9 @@ def main():
         data = json_saver.select_HH()
         data = sort_by_salary_min(data)
 
-        for row in data:
-            print(row, end=f'\n{"*"*30}\n')
     elif platforms == 'SuperJob':
         superjob_api = SuperJobAPI() # Создание экземпляра класса для работы с API SuperJob
-        superjob_vacancies = superjob_api.get_vacancies(keyword) # Получение вакансий с SuperJob
+        superjob_vacancies = superjob_api.get_vacancies(keyword, count) # Получение вакансий с SuperJob
 
         # Сохранение информации о вакансиях SuperJob в файл
         json_saver = JSONSaver(keyword)
@@ -31,10 +30,14 @@ def main():
         data = json_saver.select_SJ()
         data = sort_by_salary_min(data)
 
-        for row in data:
-            print(row, end=f'\n{"*" * 30}\n')
     else:
         print('Ошибка в имени платформы.')
+
+
+    for row in data:
+        print(row, end=f'\n{"*" * 30}\n')
+
+    json_saver.delete_vacancy()
 
 
 if __name__ == "__main__":

@@ -12,18 +12,21 @@ class BaseClass(ABC):
 
 
 class HeadHunterAPI(BaseClass):
+
+    '''Обработка запроса с сайта HeadHunter'''
+
     def get_requests(self, keyword, page):
         params = {'text': keyword, 'page': page, 'per_page': 100}
         response = requests.get('https://api.hh.ru/vacancies/', params=params).json()['items']
 
         return response
 
-    def get_vacancies(self, keyword, count=1000):
-        pages = 1
+    def get_vacancies(self, keyword, count):
+        pages = int(count / 100)
         response = []
         for page in range(pages):
             print(f'Парсинг страницы HeadHunter {page + 1}', end=': '
-                  'Вывод отсортирован по возрастанию минимаотной границы зарплаты.\n')
+                  'Вывод отсортирован по убыванию минимальной границы зарплаты.\n')
             values = self.get_requests(keyword, page)
             if len(values) > 0:
                 print(f'Найдено {len(values)} вакансий')
@@ -36,6 +39,8 @@ class HeadHunterAPI(BaseClass):
 
 class SuperJobAPI(BaseClass):
 
+    '''Обработка запроса с сайта SuperJob'''
+
     def get_requests(self, keyword):
         my_auth_data = {'X-Api-App-Id': 'v3.r.137554298.7ed34200bc8788e0642503c21968de5327309a34.069ebc348f3a077c9626c0106aa6f72964488b38'}
         header = my_auth_data
@@ -46,12 +51,12 @@ class SuperJobAPI(BaseClass):
             raise 'Ошибка пaрсинга'
         return response.json()['objects']
 
-    def get_vacancies(self, keyword, count=499):
-        pages = 1
+    def get_vacancies(self, keyword, count):
+        pages = int(count / 100)
         response = []
         for page in range(pages):
             print(f'Парсинг страницы SuperJob {page + 1}', end=': '
-                  'Вывод отсортирован по возрастанию минимаотной границы зарплаты.\n')
+                  'Вывод отсортирован по убыванию минимальной границы зарплаты.\n')
             values = self.get_requests(keyword)
             if len(values) > 0:
                 print(f'Найдено {len(values)} вакансий')
@@ -98,7 +103,6 @@ class Vacancy:
         return self.salary_sort_min >= other.salary_sort_min
 
 
-
 class JSONSaver:
     def __init__(self, keyword):
         self.__filename = f'{keyword.title()}.json'
@@ -139,3 +143,10 @@ class JSONSaver:
             vacancies.append(Vacancy(row['profession'], salary_min, salary_max, currency, row['firm_name'], row['town']['title'], row['link']))
 
         return vacancies
+
+    def delete_vacancy(self):
+
+        '''Стираю json файл'''
+
+        open(self.__filename, "w").close()
+
