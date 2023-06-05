@@ -6,7 +6,8 @@ def main():
 
     keyword = input('По какому ключевому слову ищем вакансию: ')
     platforms = input(f'HeadHunter или SuperJob? ')
-    count = int(input('Сколько вакансий смотрим? '))
+    count = int(input('Сколько вакансий просматриваем? '))
+    count_top = int(input('TOP вакансий, колличество: '))
 
     if platforms == 'HeadHunter':
         hh_api = HeadHunterAPI() # Создание экземпляра класса для работы с API HeadHunter
@@ -33,9 +34,11 @@ def main():
     else:
         print('Ошибка в имени платформы.')
 
-
+    i = 1
     for row in data:
-        print(row, end=f'\n{"*" * 30}\n')
+        if i <= count_top:
+            print(row, end=f'\n{"*" * 30}\n')
+        i += 1
 
     json_saver.delete_vacancy()
 
